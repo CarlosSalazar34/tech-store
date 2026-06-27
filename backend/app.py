@@ -38,6 +38,15 @@ async def get_products():
         stmt = select(Products)
         result = session.scalars(stmt).all()
         return result
+
+@app.get("/products/{product_id}")
+async def get_product(product_id: int):
+    with Session(engine) as session:
+        stmt = select(Products).where(Products.id == product_id)
+        result = session.scalars(stmt).first()
+        if not result:
+            raise HTTPException(status_code=404, detail="Product not found")
+        return result
     
 @app.post("/join")
 async def join(request: Request):

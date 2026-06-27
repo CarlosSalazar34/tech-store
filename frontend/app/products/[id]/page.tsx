@@ -22,12 +22,17 @@ export default function ProductPage({ params }: Props) {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`${BACKEND_URL}/products`);
-        const data: Product[] = await response.json();
-        const found = data.find((p) => p.id === parseInt(id));
-        if (found) {
-          setProduct(found);
+        const response = await fetch(`${BACKEND_URL}/products/${id}`);
+        if (!response.ok) {
+          if (response.status === 404) {
+            setProduct(null);
+          } else {
+            console.error("Error fetching product");
+          }
+          return;
         }
+        const data: Product = await response.json();
+        setProduct(data);
       } catch (error) {
         console.error(error);
       } finally {
